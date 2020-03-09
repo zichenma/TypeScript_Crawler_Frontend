@@ -16,7 +16,7 @@ import './style.css';
 class Home extends React.PureComponent {
     // 同样可以把 state 定义在这里，props 也可以得到类型提示
     state = {
-        loaded: false,
+        // loaded: false,
         isLogin : true
     };
     constructor(props: {}) {
@@ -31,18 +31,34 @@ class Home extends React.PureComponent {
         if (!res.data?.data) {
             this.setState({
                 isLogin : false,
-                loaded: true
             })
         }
+        // this.setState({
+        //     loaded: true
+        // })
     }
+
+    handleLogoutClick = async () => {
+        const res = await axios.get('/api/logout');
+        if (res.data?.data) {
+            this.setState({
+                isLogin : false,
+            })
+        }
+        // this.setState({
+        //     loaded: true
+        // })
+    }
+
    render() {
-       const { isLogin, loaded} = this.state;
-       if (isLogin && loaded) {
+       // const { isLogin, loaded} = this.state;
+       const { isLogin } = this.state;
+       if (isLogin) {
         return (
             <div className="home-page">
               <Button type="primary" >Crawl</Button>
               <Button type="primary">Display</Button>
-              <Button type="primary">Exit</Button>
+              <Button type="primary" onClick={this.handleLogoutClick}>Exit</Button>
             </div>
           )
        }

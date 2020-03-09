@@ -1,7 +1,10 @@
-import React, { Component } from 'react';
-import { Form, Icon, Input, Button } from 'antd';
+import React, { PureComponent } from 'react';
+import axios from 'axios';
+import qs from 'qs';
+import { Form, Icon, Input, Button, message } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import './style.css';
+import { Redirect } from 'react-router-dom';
 
 
 interface FormFields {
@@ -13,19 +16,39 @@ interface Props {
 
 
 
-class LoginForm extends Component<Props> {
+class LoginForm extends PureComponent<Props> {
+  state = {
+      isLogin : false
+  }
   handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        axios.post('/api/login', qs.stringify({
+            password: values.password
+        }), {
+            headers: {
+                "Content-Type" : "application/x-www-form-urlencoded"
+            }
+        })
+        .then(res => {
+            if(res.data?.data) {
+                this.setState({
+                    isLogin : true
+                })
+            } else {
+                message.error("Login Failed")
+            }
+        })
       }
     });
   };
 
   render() {
+    const { isLogin } = this.state;
     const { getFieldDecorator } = this.props.form;
-    return (
+    return  isLogin ? (<Redirect to="/" /> 
+        ) : (
       <div className="login-page">
         <Form onSubmit={this.handleSubmit} className="login-form">
           <Form.Item>

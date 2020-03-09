@@ -13,6 +13,7 @@
     "@types/react-dom": "^16.9.5",
     "antd": "^3.26.7",
     "axios": "^0.19.2",
+    "qs": "^6.9.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-router-dom": "^5.1.2",
@@ -41,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@types/qs": "^6.9.1",
     "@types/react-router-dom": "^5.1.3"
   }
 }
