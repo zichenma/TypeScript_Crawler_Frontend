@@ -3,6 +3,7 @@ import React  from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import ReactEcharts from 'echarts-for-react';
+import moment from 'moment';
 import { Button, message } from 'antd';
 import './style.css';
 
@@ -13,17 +14,35 @@ import './style.css';
 // 范型里面可以包含另外一个范型，这样就可以使得 props 有语法提示
 // class Home extends React.PureComponent<{}, State> {
 
+interface CourseItem {
+    title: string;
+    count: number;
+}
+interface State {
+    isLogin: boolean;
+    data: {
+        [key: string] : CourseItem[]
+    }
+}
+
+interface LineData {
+    name: string;
+    type: string;
+    data: number[];
+}
 
 class Home extends React.PureComponent {
     // 同样可以把 state 定义在这里，props 也可以得到类型提示
-    state = {
-        isLogin : true
+    state: State = {
+        isLogin : true,
+        data: {}
     };
     constructor(props: {}) {
         super(props);
     }
     componentDidMount() {
         this.checkLoginStatus('/api/isLogin');
+        this.showData();
     }
 
     checkLoginStatus = async (url: string) =>  {
@@ -52,18 +71,55 @@ class Home extends React.PureComponent {
             message.error('Crawl Failed!')
         }
     }
+
+    showData = async () => {
+        const res = await axios.get('/api/showData');
+        if (res.data?.data) {
+            this.setState({
+                data: res.data.data
+            });
+        } 
+    }
     
     // get from echarts definition file
     getOptions:() => echarts.EChartOption =  () => {
+     const { data } = this.state;
+     const courseNames: string[] = [];
+     const times: string[] = [];
+     const tempData : {
+         [key: string] : number[];
+     } = {};
+     for (let i in data) {
+         const item = data[i];
+         times.push(moment(Number(i)).format('MM/DD HH:mm'));
+         item.forEach(innerItem => {
+             const { title, count } = innerItem;
+             if (courseNames.indexOf(title) === -1) {
+                 courseNames.push(title);
+             }
+             tempData[title] ? tempData[title].push(count) : (tempData[title] = [count]);
+         })
+     }
+     const result: LineData[] = [];
+     for(let i in tempData) {
+        if(tempData[i].length !== 0) {
+            result.push({
+                name: i,
+                type: 'line',
+                data: tempData[i]
+            })
+        }
+     }
+    
      return {
             title: {
-                text: '折线图堆叠'
+                text: 'Online Course Learners'
             },
             tooltip: {
                 trigger: 'axis'
             },
             legend: {
-                data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+                data: courseNames
             },
             grid: {
                 left: '3%',
@@ -71,51 +127,15 @@ class Home extends React.PureComponent {
                 bottom: '3%',
                 containLabel: true
             },
-            toolbox: {
-                feature: {
-                    saveAsImage: {}
-                }
-            },
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
-                data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                data: times
             },
             yAxis: {
                 type: 'value'
             },
-            series: [
-                {
-                    name: '邮件营销',
-                    type: 'line',
-                    stack: '总量',
-                    data: [120, 132, 101, 134, 90, 230, 210]
-                },
-                {
-                    name: '联盟广告',
-                    type: 'line',
-                    stack: '总量',
-                    data: [220, 182, 191, 234, 290, 330, 310]
-                },
-                {
-                    name: '视频广告',
-                    type: 'line',
-                    stack: '总量',
-                    data: [150, 232, 201, 154, 190, 330, 410]
-                },
-                {
-                    name: '直接访问',
-                    type: 'line',
-                    stack: '总量',
-                    data: [320, 332, 301, 334, 390, 330, 320]
-                },
-                {
-                    name: '搜索引擎',
-                    type: 'line',
-                    stack: '总量',
-                    data: [820, 932, 901, 934, 1290, 1330, 1320]
-                }
-            ]
+            series: result
         };        
     }
 
