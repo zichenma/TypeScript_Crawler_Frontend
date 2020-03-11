@@ -5,6 +5,7 @@ import { Form, Icon, Input, Button, message } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
 import './style.css';
 import { Redirect } from 'react-router-dom';
+import responseResult from '../../responseResult'
 
 
 interface FormFields {
@@ -32,7 +33,7 @@ class LoginForm extends PureComponent<Props> {
             }
         })
         .then(res => {
-          const data: boolean  = res.data;
+          const data: responseResult.login = res.data;
             if(data) {
                 this.setState({
                     isLogin : true

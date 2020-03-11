@@ -6,6 +6,7 @@ import request from '../../request';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { Button, message } from 'antd';
+import responseResult from '../../responseResult';
 import './style.css';
 
 
@@ -15,17 +16,10 @@ import './style.css';
 // 范型里面可以包含另外一个范型，这样就可以使得 props 有语法提示
 // class Home extends React.PureComponent<{}, State> {
 
-interface CourseItem {
-    title: string;
-    count: number;
-}
+
 interface State {
     isLogin: boolean;
-    data: DataStructure
-}
-
-interface DataStructure {
-    [key: string] : CourseItem[]
+    data: responseResult.DataStructure
 }
 
 class Home extends React.PureComponent {
@@ -44,7 +38,7 @@ class Home extends React.PureComponent {
 
     checkLoginStatus = async (url: string) =>  {
         const res = await request.get(url);
-        const data: boolean = res.data;
+        const data: responseResult.isLogin = res.data;
         if (!data) {
             this.setState({
                 isLogin : false,
@@ -54,8 +48,7 @@ class Home extends React.PureComponent {
 
     handleLogoutClick = async () => {
         const res = await request.get('/api/logout');
-        const data: boolean = res.data;
-        console.log(data)
+        const data: responseResult.logout = res.data;
         if (data) {
             this.setState({
                 isLogin : false,
@@ -65,7 +58,7 @@ class Home extends React.PureComponent {
 
     handleCrawllerClick = async () => {
         const res = await request.get('/api/getData');
-        const data: boolean = res.data;
+        const data: responseResult.getData = res.data;
         if (data) {
             message.success('Crawl Successfully!')
         } else {
@@ -75,7 +68,7 @@ class Home extends React.PureComponent {
 
     showData = async () => {
         const res = await request.get('/api/showData');
-        const data: DataStructure = res.data;
+        const data: responseResult.DataStructure = res.data;
         if (data) {
             this.setState({
                 data
