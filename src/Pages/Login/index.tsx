@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import axios from 'axios';
+import request from '../../request';
 import qs from 'qs';
 import { Form, Icon, Input, Button, message } from 'antd';
 import { WrappedFormUtils } from 'antd/lib/form/Form';
@@ -24,7 +24,7 @@ class LoginForm extends PureComponent<Props> {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        axios.post('/api/login', qs.stringify({
+        request.post('/api/login', qs.stringify({
             password: values.password
         }), {
             headers: {
@@ -32,7 +32,8 @@ class LoginForm extends PureComponent<Props> {
             }
         })
         .then(res => {
-            if(res.data?.data) {
+          const data: boolean  = res.data;
+            if(data) {
                 this.setState({
                     isLogin : true
                 })

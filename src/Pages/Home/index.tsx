@@ -1,7 +1,8 @@
 import React  from 'react';
 // import React,  { useEffect, useState }  from 'react';
 import { Redirect } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios';
+import request from '../../request';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { Button, message } from 'antd';
@@ -20,15 +21,11 @@ interface CourseItem {
 }
 interface State {
     isLogin: boolean;
-    data: {
-        [key: string] : CourseItem[]
-    }
+    data: DataStructure
 }
 
-interface LineData {
-    name: string;
-    type: string;
-    data: number[];
+interface DataStructure {
+    [key: string] : CourseItem[]
 }
 
 class Home extends React.PureComponent {
@@ -46,8 +43,9 @@ class Home extends React.PureComponent {
     }
 
     checkLoginStatus = async (url: string) =>  {
-        const res = await axios.get(url);
-        if (!res.data?.data) {
+        const res = await request.get(url);
+        const data: boolean = res.data;
+        if (!data) {
             this.setState({
                 isLogin : false,
             })
@@ -55,8 +53,10 @@ class Home extends React.PureComponent {
     }
 
     handleLogoutClick = async () => {
-        const res = await axios.get('/api/logout');
-        if (res.data?.data) {
+        const res = await request.get('/api/logout');
+        const data: boolean = res.data;
+        console.log(data)
+        if (data) {
             this.setState({
                 isLogin : false,
             })
@@ -64,8 +64,9 @@ class Home extends React.PureComponent {
     }
 
     handleCrawllerClick = async () => {
-        const res = await axios.get('/api/getData');
-        if (res.data?.data) {
+        const res = await request.get('/api/getData');
+        const data: boolean = res.data;
+        if (data) {
             message.success('Crawl Successfully!')
         } else {
             message.error('Crawl Failed!')
@@ -73,10 +74,11 @@ class Home extends React.PureComponent {
     }
 
     showData = async () => {
-        const res = await axios.get('/api/showData');
-        if (res.data?.data) {
+        const res = await request.get('/api/showData');
+        const data: DataStructure = res.data;
+        if (data) {
             this.setState({
-                data: res.data.data
+                data
             });
         } 
     }
@@ -100,7 +102,7 @@ class Home extends React.PureComponent {
              tempData[title] ? tempData[title].push(count) : (tempData[title] = [count]);
          })
      }
-     const result: LineData[] = [];
+     const result: echarts.EChartOption.Series[] = [];
      for(let i in tempData) {
         if(tempData[i].length !== 0) {
             result.push({
