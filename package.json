@@ -2,6 +2,7 @@
   "name": "typescript_crawler_front",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:7001",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.1",
@@ -10,8 +11,15 @@
     "@types/node": "^12.12.29",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
+    "antd": "^3.26.7",
+    "axios": "^0.19.2",
+    "echarts": "^4.6.0",
+    "echarts-for-react": "^2.0.15-beta.1",
+    "moment": "^2.24.0",
+    "qs": "^6.9.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
     "typescript": "^3.7.5"
   },
@@ -35,5 +43,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/echarts": "^4.4.3",
+    "@types/qs": "^6.9.1",
+    "@types/react-router-dom": "^5.1.3"
   }
 }
